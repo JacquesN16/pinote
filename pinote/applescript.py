@@ -23,6 +23,7 @@ def get_all_notes() -> list[dict]:
     result = subprocess.run(
         ["osascript", "-e", GET_ALL_NOTES_SCRIPT], capture_output=True, text=True
     )
+    print(result.stdout)
     return json.loads(result.stdout)
 
 
