@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from pinote.notes import Note
 
 
@@ -20,6 +18,7 @@ def test_note_dataclass_optional_fields_default_none():
 
 def test_note_dataclass_with_all_fields():
     from datetime import datetime
+
     dt = datetime(2024, 1, 15)
     note = Note(
         id="abc",
