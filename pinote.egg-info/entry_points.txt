@@ -1,0 +1,2 @@
+[console_scripts]
+pinote = pinote.cli:app

@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from pinote.applescript import get_all_notes
+
 
 @dataclass
 class Note:
@@ -13,4 +15,8 @@ class Note:
     folder: str | None = None  # maps to "container"
 
 
-def list_notes() -> list[Note]: ...
+def list_notes() -> list[Note]:
+    raw_notes = get_all_notes()
+    return [Note(id = note["id"], title = note["title"]) for note in raw_notes]
+
+

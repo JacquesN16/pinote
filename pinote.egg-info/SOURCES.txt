@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+pinote/__init__.py
+pinote/applescript.py
+pinote/cli.py
+pinote/notes.py
+pinote.egg-info/PKG-INFO
+pinote.egg-info/SOURCES.txt
+pinote.egg-info/dependency_links.txt
+pinote.egg-info/entry_points.txt
+pinote.egg-info/requires.txt
+pinote.egg-info/top_level.txt
+tests/test_applescript.py
+tests/test_cli.py
+tests/test_notes.py
