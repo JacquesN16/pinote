@@ -28,11 +28,34 @@ def get_all_notes() -> list[dict]:
     return json.loads(result.stdout)
 
 
-def get_note_by_id(id: str) -> dict:
+def get_note_by_id(note_id: str) -> dict:
     # fetch one notes
     script = f"""
 tell application "Notes"
-    set n to 
+    set n to note id "{note_id}"
+    set noteId to the id of n 
+    set noteTitle to name of n
+    set noteBody to body of n
+    set notePlaintext to plaintext of n
+    set noteCreated to creation date of n
+    set noteModified to modification date of n
+    return noteId & "||" & noteTitle & "||" & noteBody & "||" & notePlaintext & "||" & (noteCreated as string) & "||" & (noteModified as string)
+end tell
 """
+    result = subprocess.run(
+        ["osascript", "-e", script], capture_output=True, text=True
+    )
+    parts = result.stdout.strip().split("||")
+    return {
+        "id" : parts[0],
+        "title": parts[1],
+        "body": parts[2],
+        "plaintext": parts[3],
+        "created_at": parts[4],
+        "updated_at": parts[5],
+    }
+
+
+
 def create_note(title: str, body: str) -> dict: ...  # create new notes
 def update_note(id: str, title: str, body: str) -> None: ...  # update existing note

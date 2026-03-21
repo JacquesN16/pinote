@@ -1,6 +1,6 @@
 import typer
 
-from pinote.notes import list_notes
+from pinote.notes import list_notes, get_note
 
 app = typer.Typer()
 
@@ -14,7 +14,10 @@ if __name__ == "__main__":
     app()
 
 @app.command()
-def read(id: str): ...
+def read(note_id: str):
+    note = get_note(note_id)
+    typer.echo(f"Title: {note.title}")
+    typer.echo(f"Body: {note.plaintext}")
 
 
 @app.command()
