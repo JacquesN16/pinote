@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install ruff pytest
+          pip install ruff==0.15.7 pytest
           pip install -e .
 
       - name: Format check (ruff)
