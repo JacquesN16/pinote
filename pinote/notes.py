@@ -17,7 +17,8 @@ class Note:
 
 def list_notes() -> list[Note]:
     raw_notes = get_all_notes()
-    return [Note(id = note["id"], title = note["title"]) for note in raw_notes]
+    return [Note(id=note["id"], title=note["title"]) for note in raw_notes]
+
 
 def get_note(note_id: str) -> Note:
     raw = get_note_by_id(note_id)
@@ -25,8 +26,8 @@ def get_note(note_id: str) -> Note:
     return Note(
         id=raw["id"],
         title=raw["title"],
-        body= raw["body"],
+        body=raw["body"],
         plaintext=raw["plaintext"],
-        created_at =raw["created_at"],
-        updated_at =raw["updated_at"],
+        created_at=raw["created_at"],
+        updated_at=raw["updated_at"],
     )

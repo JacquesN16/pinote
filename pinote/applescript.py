@@ -42,19 +42,16 @@ tell application "Notes"
     return noteId & "||" & noteTitle & "||" & noteBody & "||" & notePlaintext & "||" & (noteCreated as string) & "||" & (noteModified as string)
 end tell
 """
-    result = subprocess.run(
-        ["osascript", "-e", script], capture_output=True, text=True
-    )
+    result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
     parts = result.stdout.strip().split("||")
     return {
-        "id" : parts[0],
+        "id": parts[0],
         "title": parts[1],
         "body": parts[2],
         "plaintext": parts[3],
         "created_at": parts[4],
         "updated_at": parts[5],
     }
-
 
 
 def create_note(title: str, body: str) -> dict: ...  # create new notes
