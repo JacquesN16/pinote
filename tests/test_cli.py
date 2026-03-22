@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from typer.testing import CliRunner
 
 from pinote.cli import app
@@ -6,12 +8,22 @@ runner = CliRunner()
 
 
 def test_app_has_list_command():
-    result = runner.invoke(app, ["list"])
+    with patch("pinote.notes.get_all_notes", return_value=[]):
+        result = runner.invoke(app, ["list"])
     assert result.exit_code == 0
 
 
 def test_app_has_read_command():
-    result = runner.invoke(app, ["read", "some-id"])
+    fake_note = {
+        "id": "some-id",
+        "title": "Test",
+        "body": "",
+        "plaintext": "",
+        "created_at": "",
+        "updated_at": "",
+    }
+    with patch("pinote.notes.get_note_by_id", return_value=fake_note):
+        result = runner.invoke(app, ["read", "some-id"])
     assert result.exit_code == 0
 
 
