@@ -1,6 +1,6 @@
 import typer
 
-from pinote.notes import get_note, list_notes
+from pinote.notes import create_note, get_note, list_notes, update_note
 
 app = typer.Typer()
 
@@ -24,8 +24,12 @@ def read(note_id: str):
 
 
 @app.command()
-def create(): ...
+def create(title: str, body: str = ""):
+    note = create_note(title, body)
+    typer.echo(f"{note.id} - {note.title}")
 
 
 @app.command()
-def update(id: str): ...
+def update(note_id: str, title: str, body: str):
+    update_note(note_id, title, body)
+    typer.echo("Updated.")

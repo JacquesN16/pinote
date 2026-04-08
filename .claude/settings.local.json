@@ -4,7 +4,11 @@
       "Bash(.venv/bin/pip show:*)",
       "Bash(.venv/bin/pip install:*)",
       "Bash(.venv/bin/python -m pytest tests/ -v 2>&1)",
-      "Bash(.venv/bin/pytest tests/test_cli.py -v 2>&1)"
+      "Bash(.venv/bin/pytest tests/test_cli.py -v 2>&1)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(uv run:*)",
+      "Bash(pip3 install:*)"
     ]
   },
   "disabledMcpjsonServers": [

@@ -24,7 +24,6 @@ def get_all_notes() -> list[dict]:
     result = subprocess.run(
         ["osascript", "-e", GET_ALL_NOTES_SCRIPT], capture_output=True, text=True
     )
-    print(result.stdout)
     return json.loads(result.stdout)
 
 
@@ -54,5 +53,24 @@ end tell
     }
 
 
-def create_note(title: str, body: str) -> dict: ...  # create new notes
-def update_note(id: str, title: str, body: str) -> None: ...  # update existing note
+def create_note(title: str, body: str) -> dict:
+    script = f"""
+tell application "Notes"
+    set n to make new note with properties {{name:"{title}", body:"{body}"}}
+    return (id of n) & "||" & (name of n)
+end tell
+"""
+    result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
+    parts = result.stdout.strip().split("||")
+    return {"id": parts[0], "title": parts[1]}
+
+
+def update_note(note_id: str, title: str, body: str) -> None:
+    script = f"""
+tell application "Notes"
+    set n to note id "{note_id}"
+    set name of n to "{title}"
+    set body of n to "{body}"
+end tell
+"""
+    subprocess.run(["osascript", "-e", script], capture_output=True, text=True)

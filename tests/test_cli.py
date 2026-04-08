@@ -28,10 +28,13 @@ def test_app_has_read_command():
 
 
 def test_app_has_create_command():
-    result = runner.invoke(app, ["create"])
+    fake_note = {"id": "new-id", "title": "My Note"}
+    with patch("pinote.notes.applescript_create", return_value=fake_note):
+        result = runner.invoke(app, ["create", "My Note"])
     assert result.exit_code == 0
 
 
 def test_app_has_update_command():
-    result = runner.invoke(app, ["update", "some-id"])
+    with patch("pinote.notes.applescript_update", return_value=None):
+        result = runner.invoke(app, ["update", "some-id", "New Title", "New Body"])
     assert result.exit_code == 0
