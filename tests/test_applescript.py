@@ -26,6 +26,7 @@ FULL_NOTE_STDOUT = "id1||title||<p/>||plain||2024-01-01||2024-01-01||Notes"
 
 # --- existing get_all_notes tests ---
 
+
 def test_get_all_notes_returns_list():
     with patch("subprocess.run", return_value=make_run_result("x1||Note A\rx2||Note B\r")):
         notes = get_all_notes()
@@ -54,6 +55,7 @@ def test_get_all_notes_calls_osascript():
 
 # --- _escape tests ---
 
+
 def test_escape_double_quotes():
     assert _escape('say "hello"') == 'say \\"hello\\"'
 
@@ -79,6 +81,7 @@ def test_escape_crlf_normalized():
 
 
 # --- AppleScriptError on non-zero returncode ---
+
 
 def test_get_all_notes_raises_on_error():
     with patch("subprocess.run", return_value=make_run_result(returncode=1, stderr="error")):
@@ -106,6 +109,7 @@ def test_update_note_raises_on_error():
 
 # --- injection safety ---
 
+
 def test_get_note_by_id_escapes_id():
     with patch("subprocess.run", return_value=make_run_result(FULL_NOTE_STDOUT)) as mock_run:
         get_note_by_id('x"1')
@@ -115,10 +119,13 @@ def test_get_note_by_id_escapes_id():
 
 
 def test_create_note_escapes_title_and_body():
-    with patch("subprocess.run", side_effect=[
-        make_run_result("new-id"),
-        make_run_result(FULL_NOTE_STDOUT),
-    ]) as mock_run:
+    with patch(
+        "subprocess.run",
+        side_effect=[
+            make_run_result("new-id"),
+            make_run_result(FULL_NOTE_STDOUT),
+        ],
+    ) as mock_run:
         create_note('My "Note"', 'body "here"')
     first_script = mock_run.call_args_list[0][0][0][2]
     assert '\\"' in first_script
@@ -132,6 +139,7 @@ def test_update_note_escapes_inputs():
 
 
 # --- optional update fields ---
+
 
 def test_update_note_skips_title_when_none():
     with patch("subprocess.run", return_value=make_run_result("")) as mock_run:
@@ -151,6 +159,7 @@ def test_update_note_skips_body_when_none():
 
 # --- folder field ---
 
+
 def test_get_note_by_id_returns_folder():
     raw = "id1||title||<html/>||plain||2024-01-01||2024-01-01||Work"
     with patch("subprocess.run", return_value=make_run_result(raw)):
@@ -159,6 +168,7 @@ def test_get_note_by_id_returns_folder():
 
 
 # --- delete_note ---
+
 
 def test_delete_note_calls_osascript():
     with patch("subprocess.run", return_value=make_run_result("")) as mock_run:

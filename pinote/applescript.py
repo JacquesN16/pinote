@@ -102,5 +102,5 @@ def update_note(note_id: str, title: str | None, body: str | None) -> None:
         lines.append(f'set name of n to "{_escape(title)}"')
     if body is not None:
         lines.append(f'set body of n to "{_escape(body)}"')
-    script = "tell application \"Notes\"\n" + "\n".join(f"    {l}" for l in lines) + "\nend tell"
+    script = 'tell application "Notes"\n' + "\n".join(f"    {l}" for l in lines) + "\nend tell"
     _run_script(script)

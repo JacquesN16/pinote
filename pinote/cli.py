@@ -132,9 +132,7 @@ def show():
 
         content = f"{full_note.title}\n\n{full_note.plaintext or ''}"
 
-        tmp = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".txt", delete=False, encoding="utf-8"
-        )
+        tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, encoding="utf-8")
         try:
             tmp.write(content)
             tmp.flush()

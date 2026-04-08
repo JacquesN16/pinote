@@ -18,6 +18,7 @@ FULL_RAW = {
 
 # --- Note dataclass ---
 
+
 def test_note_dataclass_required_fields():
     note = Note(id="1", title="Test")
     assert note.id == "1"
@@ -53,6 +54,7 @@ def test_note_dataclass_with_all_fields():
 
 # --- create_note ---
 
+
 def test_create_note_returns_full_note():
     with patch("pinote.applescript.create_note", return_value=FULL_RAW):
         note = create_note("T", "<p/>")
@@ -70,6 +72,7 @@ def test_create_note_propagates_applescript_error():
 
 # --- get_note ---
 
+
 def test_get_note_returns_folder():
     with patch("pinote.applescript.get_note_by_id", return_value=FULL_RAW):
         note = get_note("n1")
@@ -77,6 +80,7 @@ def test_get_note_returns_folder():
 
 
 # --- update_note ---
+
 
 def test_update_note_passes_none_title():
     with patch("pinote.applescript.update_note") as mock_upd:
@@ -92,6 +96,7 @@ def test_update_note_passes_none_body():
 
 # --- delete_note ---
 
+
 def test_delete_note_delegates_to_applescript():
     with patch("pinote.applescript.delete_note") as mock_del:
         delete_note("n1")
@@ -105,6 +110,7 @@ def test_delete_note_propagates_applescript_error():
 
 
 # --- find_notes_by_title ---
+
 
 def test_find_notes_by_title_returns_empty_when_no_match():
     raw = [{"id": "1", "title": "Alpha"}, {"id": "2", "title": "Beta"}]

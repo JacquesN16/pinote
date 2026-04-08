@@ -39,14 +39,19 @@ def test_app_has_create_command():
 
 def test_app_has_update_command():
     with patch("pinote.applescript.update_note", return_value=None):
-        result = runner.invoke(app, ["update", "some-id", "--title", "New Title", "--body", "New Body"])
+        result = runner.invoke(
+            app, ["update", "some-id", "--title", "New Title", "--body", "New Body"]
+        )
     assert result.exit_code == 0
 
 
 # --- error exit codes ---
 
+
 def test_list_exits_1_on_applescript_error():
-    with patch("pinote.applescript.get_all_notes", side_effect=AppleScriptError("Notes not running")):
+    with patch(
+        "pinote.applescript.get_all_notes", side_effect=AppleScriptError("Notes not running")
+    ):
         result = runner.invoke(app, ["list"])
     assert result.exit_code == 1
 
@@ -71,6 +76,7 @@ def test_update_exits_1_on_applescript_error():
 
 # --- partial update ---
 
+
 def test_update_with_only_title():
     with patch("pinote.applescript.update_note") as mock_upd:
         result = runner.invoke(app, ["update", "some-id", "--title", "New Title"])
@@ -88,6 +94,7 @@ def test_update_with_only_body():
 # --- delete command ---
 # Note: `show` is not unit tested because it requires a real terminal
 # (prompt_toolkit Application hangs when CliRunner captures stdout).
+
 
 def test_delete_by_id_succeeds():
     with patch("pinote.applescript.delete_note") as mock_del:
