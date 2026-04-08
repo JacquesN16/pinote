@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from pinote.applescript import create_note as applescript_create, get_all_notes, get_note_by_id, update_note as applescript_update
+import pinote.applescript as applescript
+from pinote.applescript import AppleScriptError  # noqa: F401 — re-exported for callers
 
 
 @dataclass
@@ -16,22 +17,12 @@ class Note:
 
 
 def list_notes() -> list[Note]:
-    raw_notes = get_all_notes()
+    raw_notes = applescript.get_all_notes()
     return [Note(id=note["id"], title=note["title"]) for note in raw_notes]
 
 
-def create_note(title: str, body: str) -> Note:
-    raw = applescript_create(title, body)
-    return Note(id=raw["id"], title=raw["title"])
-
-
-def update_note(note_id: str, title: str, body: str) -> None:
-    applescript_update(note_id, title, body)
-
-
 def get_note(note_id: str) -> Note:
-    raw = get_note_by_id(note_id)
-
+    raw = applescript.get_note_by_id(note_id)
     return Note(
         id=raw["id"],
         title=raw["title"],
@@ -39,4 +30,22 @@ def get_note(note_id: str) -> Note:
         plaintext=raw["plaintext"],
         created_at=raw["created_at"],
         updated_at=raw["updated_at"],
+        folder=raw["folder"],
     )
+
+
+def create_note(title: str, body: str = "", folder: str | None = None) -> Note:
+    raw = applescript.create_note(title, body, folder)
+    return Note(
+        id=raw["id"],
+        title=raw["title"],
+        body=raw["body"],
+        plaintext=raw["plaintext"],
+        created_at=raw["created_at"],
+        updated_at=raw["updated_at"],
+        folder=raw["folder"],
+    )
+
+
+def update_note(note_id: str, title: str | None = None, body: str | None = None) -> None:
+    applescript.update_note(note_id, title, body)
