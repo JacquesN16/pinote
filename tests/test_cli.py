@@ -4,7 +4,6 @@ from typer.testing import CliRunner
 
 from pinote.applescript import AppleScriptError
 from pinote.cli import app
-from pinote.notes import Note
 
 runner = CliRunner()
 
