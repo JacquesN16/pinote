@@ -6,7 +6,9 @@ class AppleScriptError(Exception):
 
 
 def _escape(value: str) -> str:
-    return value.replace("\\", "\\\\").replace('"', '\\"')
+    value = value.replace("\r\n", "\n").replace("\r", "\n")
+    value = value.replace("\\", "\\\\").replace('"', '\\"')
+    return '" & return & "'.join(value.split("\n"))
 
 
 def _run_script(script: str) -> str:
@@ -52,7 +54,11 @@ tell application "Notes"
     set notePlaintext to plaintext of n
     set noteCreated to creation date of n
     set noteModified to modification date of n
-    set noteFolder to name of container of n
+    try
+        set noteFolder to name of container of n
+    on error
+        set noteFolder to ""
+    end try
     return noteId & "||" & noteTitle & "||" & noteBody & "||" & notePlaintext & "||" & (noteCreated as string) & "||" & (noteModified as string) & "||" & noteFolder
 end tell
 """

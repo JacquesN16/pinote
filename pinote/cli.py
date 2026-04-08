@@ -78,46 +78,45 @@ def show():
         return
 
     selected_index = [0]
-    done = [False]
-    quit_app = [False]
-
-    def get_text():
-        lines = []
-        for i, note in enumerate(all_notes):
-            if i == selected_index[0]:
-                lines.append(("reverse", f"> {note.title}\n"))
-            else:
-                lines.append(("", f"  {note.title}\n"))
-        return lines
-
-    kb = KeyBindings()
-
-    @kb.add("up")
-    def _up(event):
-        selected_index[0] = max(0, selected_index[0] - 1)
-
-    @kb.add("down")
-    def _down(event):
-        selected_index[0] = min(len(all_notes) - 1, selected_index[0] + 1)
-
-    @kb.add("enter")
-    def _enter(event):
-        done[0] = True
-        event.app.exit()
-
-    @kb.add("q")
-    @kb.add("c-c")
-    def _quit(event):
-        quit_app[0] = True
-        event.app.exit()
-
-    control = FormattedTextControl(get_text, focusable=True)
-    layout = Layout(Window(content=control))
-    picker = Application(layout=layout, key_bindings=kb, full_screen=False)
 
     while True:
-        done[0] = False
-        quit_app[0] = False
+        quit_app = [False]
+
+        def get_text():
+            lines = []
+            for i, note in enumerate(all_notes):
+                if i == selected_index[0]:
+                    lines.append(("reverse", f"> {note.title}\n"))
+                else:
+                    lines.append(("", f"  {note.title}\n"))
+            lines.append(("", "\n  ↑/↓ navigate  Enter: open  q: quit"))
+            return lines
+
+        kb = KeyBindings()
+
+        @kb.add("up")
+        def _up(event):
+            selected_index[0] = max(0, selected_index[0] - 1)
+
+        @kb.add("down")
+        def _down(event):
+            selected_index[0] = min(len(all_notes) - 1, selected_index[0] + 1)
+
+        @kb.add("enter")
+        def _enter(event):
+            event.app.exit()
+
+        @kb.add("q")
+        @kb.add("c-c")
+        def _quit(event):
+            quit_app[0] = True
+            event.app.exit()
+
+        picker = Application(
+            layout=Layout(Window(content=FormattedTextControl(get_text, focusable=True))),
+            key_bindings=kb,
+            full_screen=True,
+        )
         picker.run()
 
         if quit_app[0]:

@@ -70,6 +70,14 @@ def test_escape_plain_string_unchanged():
     assert _escape("hello world") == "hello world"
 
 
+def test_escape_newline():
+    assert _escape("hello\nworld") == 'hello" & return & "world'
+
+
+def test_escape_crlf_normalized():
+    assert _escape("hello\r\nworld") == 'hello" & return & "world'
+
+
 # --- AppleScriptError on non-zero returncode ---
 
 def test_get_all_notes_raises_on_error():
