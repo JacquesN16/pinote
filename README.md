@@ -64,16 +64,45 @@ pinote create "My Note" "This is the content."
 
 ### update
 
-Update the title and body of an existing note.
+Update the title and/or body of an existing note. Both flags are optional — omit either to leave it unchanged.
 
 ```bash
-pinote update <note-id> <title> <body>
+pinote update <note-id> [--title <title>] [--body <body>]
 ```
 
-Example:
+Examples:
 ```bash
-pinote update "x-coredata://abc123/..." "Updated Title" "Updated content."
+pinote update "x-coredata://abc123/..." --title "New Title"
+pinote update "x-coredata://abc123/..." --body "New content."
+pinote update "x-coredata://abc123/..." --title "New Title" --body "New content."
 ```
+
+### show
+
+Browse all notes interactively. Use ↑/↓ to navigate, Enter to open a note in your `$EDITOR`, and `q` or Ctrl+C to quit.
+
+```bash
+pinote show
+```
+
+When a note opens in the editor, the first line is the title and the rest is the body. Save and quit the editor to write the changes back to Notes. If nothing changed, no update is made.
+
+### delete
+
+Delete a note by ID or by exact title.
+
+```bash
+pinote delete --id <note-id>
+pinote delete --name <title>
+```
+
+Examples:
+```bash
+pinote delete --id "x-coredata://abc123/..."
+pinote delete --name "Shopping list"
+```
+
+If multiple notes share the same title, the command will list their IDs and ask you to use `--id` to disambiguate.
 
 ## Development
 

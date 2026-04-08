@@ -4,6 +4,7 @@ from typer.testing import CliRunner
 
 from pinote.applescript import AppleScriptError
 from pinote.cli import app
+from pinote.notes import Note
 
 runner = CliRunner()
 
@@ -82,3 +83,55 @@ def test_update_with_only_body():
         result = runner.invoke(app, ["update", "some-id", "--body", "New Body"])
     assert result.exit_code == 0
     mock_upd.assert_called_once_with("some-id", None, "New Body")
+
+
+# --- delete command ---
+# Note: `show` is not unit tested because it requires a real terminal
+# (prompt_toolkit Application hangs when CliRunner captures stdout).
+
+def test_delete_by_id_succeeds():
+    with patch("pinote.applescript.delete_note") as mock_del:
+        result = runner.invoke(app, ["delete", "--id", "note-123"])
+    assert result.exit_code == 0
+    mock_del.assert_called_once_with("note-123")
+
+
+def test_delete_by_id_exits_1_on_applescript_error():
+    with patch("pinote.applescript.delete_note", side_effect=AppleScriptError("gone")):
+        result = runner.invoke(app, ["delete", "--id", "bad-id"])
+    assert result.exit_code == 1
+
+
+def test_delete_by_name_succeeds_when_exactly_one_match():
+    raw = [{"id": "n1", "title": "My Note"}]
+    with patch("pinote.applescript.get_all_notes", return_value=raw):
+        with patch("pinote.applescript.delete_note") as mock_del:
+            result = runner.invoke(app, ["delete", "--name", "My Note"])
+    assert result.exit_code == 0
+    mock_del.assert_called_once_with("n1")
+
+
+def test_delete_by_name_exits_1_when_not_found():
+    with patch("pinote.applescript.get_all_notes", return_value=[]):
+        result = runner.invoke(app, ["delete", "--name", "Ghost"])
+    assert result.exit_code == 1
+    assert "no note found" in result.output.lower()
+
+
+def test_delete_by_name_exits_1_when_ambiguous():
+    raw = [{"id": "1", "title": "Dup"}, {"id": "2", "title": "Dup"}]
+    with patch("pinote.applescript.get_all_notes", return_value=raw):
+        result = runner.invoke(app, ["delete", "--name", "Dup"])
+    assert result.exit_code == 1
+    assert "1" in result.output
+    assert "2" in result.output
+
+
+def test_delete_exits_1_when_neither_option_given():
+    result = runner.invoke(app, ["delete"])
+    assert result.exit_code == 1
+
+
+def test_delete_exits_1_when_both_options_given():
+    result = runner.invoke(app, ["delete", "--id", "n1", "--name", "My Note"])
+    assert result.exit_code == 1

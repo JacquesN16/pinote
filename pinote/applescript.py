@@ -1,4 +1,3 @@
-import json
 import subprocess
 
 
@@ -19,24 +18,28 @@ def _run_script(script: str) -> str:
 
 GET_ALL_NOTES_SCRIPT = """
 tell application "Notes"
-    set output to "["
+    set output to ""
     set allNotes to every note
     repeat with i from 1 to count of allNotes
         set n to item i of allNotes
-        set noteId to id of n
-        set noteTitle to name of n
-
-        set output to output & "{\\"id\\":\\"" & noteId & "\\",\\"title\\":\\"" & noteTitle & "\\"}"
-        if i < count of allNotes then set output to output & ","
+        set output to output & (id of n) & "||" & (name of n) & return
     end repeat
-    set output to output & "]"
     return output
 end tell
 """
 
 
 def get_all_notes() -> list[dict]:
-    return json.loads(_run_script(GET_ALL_NOTES_SCRIPT))
+    output = _run_script(GET_ALL_NOTES_SCRIPT).strip()
+    if not output:
+        return []
+    result = []
+    for line in output.splitlines():
+        if "||" not in line:
+            continue
+        id_, title = line.split("||", 1)
+        result.append({"id": id_, "title": title})
+    return result
 
 
 def get_note_by_id(note_id: str) -> dict:
@@ -76,6 +79,15 @@ end tell
 """
     note_id = _run_script(script).strip()
     return get_note_by_id(note_id)
+
+
+def delete_note(note_id: str) -> None:
+    script = f"""
+tell application "Notes"
+    delete note id "{_escape(note_id)}"
+end tell
+"""
+    _run_script(script)
 
 
 def update_note(note_id: str, title: str | None, body: str | None) -> None:

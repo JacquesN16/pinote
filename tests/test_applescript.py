@@ -1,4 +1,3 @@
-import json
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -7,6 +6,7 @@ from pinote.applescript import (
     AppleScriptError,
     _escape,
     create_note,
+    delete_note,
     get_all_notes,
     get_note_by_id,
     update_note,
@@ -27,28 +27,26 @@ FULL_NOTE_STDOUT = "id1||title||<p/>||plain||2024-01-01||2024-01-01||Notes"
 # --- existing get_all_notes tests ---
 
 def test_get_all_notes_returns_list():
-    data = [{"id": "x1", "title": "Note A"}, {"id": "x2", "title": "Note B"}]
-    with patch("subprocess.run", return_value=make_run_result(json.dumps(data))):
+    with patch("subprocess.run", return_value=make_run_result("x1||Note A\rx2||Note B\r")):
         notes = get_all_notes()
-    assert notes == data
+    assert notes == [{"id": "x1", "title": "Note A"}, {"id": "x2", "title": "Note B"}]
 
 
 def test_get_all_notes_empty():
-    with patch("subprocess.run", return_value=make_run_result(json.dumps([]))):
+    with patch("subprocess.run", return_value=make_run_result("")):
         notes = get_all_notes()
     assert notes == []
 
 
 def test_get_all_notes_single():
-    data = [{"id": "abc", "title": "Hello"}]
-    with patch("subprocess.run", return_value=make_run_result(json.dumps(data))):
+    with patch("subprocess.run", return_value=make_run_result("abc||Hello\r")):
         notes = get_all_notes()
     assert len(notes) == 1
     assert notes[0]["title"] == "Hello"
 
 
 def test_get_all_notes_calls_osascript():
-    with patch("subprocess.run", return_value=make_run_result(json.dumps([]))) as mock_run:
+    with patch("subprocess.run", return_value=make_run_result("")) as mock_run:
         get_all_notes()
     args = mock_run.call_args[0][0]
     assert args[0] == "osascript"
@@ -150,3 +148,34 @@ def test_get_note_by_id_returns_folder():
     with patch("subprocess.run", return_value=make_run_result(raw)):
         note = get_note_by_id("id1")
     assert note["folder"] == "Work"
+
+
+# --- delete_note ---
+
+def test_delete_note_calls_osascript():
+    with patch("subprocess.run", return_value=make_run_result("")) as mock_run:
+        delete_note("note-123")
+    args = mock_run.call_args[0][0]
+    assert args[0] == "osascript"
+
+
+def test_delete_note_script_contains_id():
+    with patch("subprocess.run", return_value=make_run_result("")) as mock_run:
+        delete_note("note-abc")
+    script = mock_run.call_args[0][0][2]
+    assert "note-abc" in script
+    assert "delete" in script
+
+
+def test_delete_note_escapes_id():
+    with patch("subprocess.run", return_value=make_run_result("")) as mock_run:
+        delete_note('id"with"quotes')
+    script = mock_run.call_args[0][0][2]
+    assert '"id"' not in script
+    assert '\\"' in script
+
+
+def test_delete_note_raises_applescript_error():
+    with patch("subprocess.run", return_value=make_run_result(returncode=1, stderr="not found")):
+        with pytest.raises(AppleScriptError):
+            delete_note("bad-id")

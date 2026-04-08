@@ -49,3 +49,11 @@ def create_note(title: str, body: str = "", folder: str | None = None) -> Note:
 
 def update_note(note_id: str, title: str | None = None, body: str | None = None) -> None:
     applescript.update_note(note_id, title, body)
+
+
+def delete_note(note_id: str) -> None:
+    applescript.delete_note(note_id)
+
+
+def find_notes_by_title(title: str) -> list[Note]:
+    return [note for note in list_notes() if note.title == title]
